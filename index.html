@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Oposiciones</title>
+    <style>
+        /* Estilos Base y Modo Oscuro */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #121824;
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Barra Superior */
+        header {
+            background-color: #1e293b;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+        header h1 { font-size: 1.2rem; color: #fff; }
+        select {
+            background-color: #334155;
+            color: #fff;
+            border: 1px solid #475569;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Contenedor de Tres Columnas (Flexbox) */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Columna 1: Menú Lateral */
+        .sidebar {
+            width: 280px;
+            background-color: #1e293b;
+            border-right: 1px solid #334155;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .section-title { font-size: 0.8rem; text-transform: uppercase; color: #94a3b8; margin: 15px 0 8px 0; letter-spacing: 0.05em; }
+        .topic-item { display: flex; align-items: center; margin-bottom: 10px; font-size: 0.95rem; cursor: pointer; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; display: inline-block; }
+        .dot-green { background-color: #10b981; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-red { background-color: #ef4444; }
+
+        /* Columna 2: Panel de Estudio Central */
+        .content-panel {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background-color: #0f172a;
+        }
+        .content-panel h2 { margin-bottom: 15px; color: #fff; }
+        .content-panel p { line-height: 1.6; color: #cbd5e1; margin-bottom: 20px; }
+
+        /* Columna 3: Chat con Claude */
+        .chat-panel {
+            width: 320px;
+            background-color: #1e293b;
+            border-left: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-header { padding: 15px; border-bottom: 1px solid #334155; font-weight: bold; font-size: 0.95rem; color: #fff; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; }
+        .message { margin-bottom: 12px; padding: 10px; border-radius: 6px; }
+        .message.user { background-color: #334155; align-self: flex-end; }
+        .message.claude { background-color: #1e1b4b; border-left: 3px solid #6366f1; }
+        .chat-input-area { padding: 15px; border-top: 1px solid #334155; display: flex; gap: 8px; }
+        .chat-input-area input { flex: 1; background-color: #0f172a; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 6px; }
+        .btn-exam { background-color: #6366f1; color: #fff; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <!-- Barra Superior -->
+    <header>
+        <h1>OrganizaTuEstudio 🎓</h1>
+        <select id="profile-selector">
+            <option value="alicante">Ayuntamiento de Alicante (Activo)</option>
+            <option value="valencia">Ayuntamiento de Valencia</option>
+        </select>
+    </header>
+
+    <!-- Contenedor Principal de 3 Columnas -->
+    <div class="main-container">
+        
+        <!-- Columna 1: Menú Lateral -->
+        <nav class="sidebar">
+            <div class="section-title">Bloque Común</div>
+            <div class="topic-item"><span class="status-dot dot-green"></span> Tema 1: Constitución</div>
+            <div class="topic-item"><span class="status-dot dot-yellow"></span> Tema 2: Ley 39/2015</div>
+            
+            <div class="section-title">Bloque Específico</div>
+            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 1: Organización Local</div>
+            
+            <div class="section-title">Herramientas</div>
+            <button class="btn-exam">📝 Crear Test de Examen</button>
+        </nav>
+
+        <!-- Columna 2: Panel de Apuntes -->
+        <main class="content-panel">
+            <h2>Tema 2: El Procedimiento Administrativo Común (Ley 39/2015)</h2>
+            <p><strong>Artículo 4. Concepto de interesado.</strong> Se consideran interesados en el procedimiento administrativo quienes lo promuevan como titulares de derechos o intereses legítimos individuales o colectivos...</p>
+            <p>Los actos administrativos se presumirán válidos y producirán efectos desde la fecha en que se dicten, salvo que en ellos se disponga otra cosa.</p>
+        </main>
+
+        <!-- Columna 3: Chat con Claude -->
+        <aside class="chat-panel">
+            <div class="chat-header">🤖 Asistente de Estudio (Claude)</div>
+            <div class="chat-messages">
+                <div class="message claude">¡Hola! Estoy listo para ayudarte con el Tema 2. ¿Tienes dudas sobre los plazos o el concepto de interesado?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" placeholder="Pregúntale a Claude...">
+            </div>
+        </aside>
+
+    </div>
+
+</body>
+</html>
