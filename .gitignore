@@ -1,0 +1,23 @@
+# Dependencias de Node (la carpeta más pesada del desarrollo web)
+node_modules/
+jspm_packages/
+
+# Carpetas de compilación y producción (código optimizado)
+.next/
+out/
+build/
+dist/
+.cache/
+
+# Archivos de configuración local y claves secretas (¡MUY IMPORTANTE!)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.sample
+
+# Archivos temporales del sistema operativo
+.DS_Store
+Thumbs.db
+*.log
