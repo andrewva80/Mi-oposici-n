@@ -68,11 +68,28 @@
             </div>
         </nav>
 
+                <!-- Columna 2: Panel de Estudio Avanzado con 3 Pestañas -->
         <main class="content-panel">
             <input type="text" id="edit-title" value="Selecciona un tema para empezar">
-            <p style="font-size: 0.85rem; color: #94a3b8;">✍️ Edita el título o pega tu contenido. Se guarda automáticamente en tu iPad.</p>
-            <textarea id="edit-content" placeholder="Escribe o pega aquí tus apuntes..."></textarea>
+            
+            <!-- Barra de Pestañas -->
+            <div style="display: flex; gap: 5px; border-bottom: 2px solid #334155; padding-bottom: 2px;">
+                <button class="btn tab-btn" id="tab-temario" onclick="cambiarPestaña('temario')" style="background: #6366f1;">📖 1. Temario Base</button>
+                <button class="btn tab-btn" id="tab-resumenes" onclick="cambiarPestaña('resumenes')" style="background: #334155;">📝 2. Mis Resúmenes</button>
+                <button class="btn tab-btn" id="tab-ejercicios" onclick="cambiarPestaña('ejercicios')" style="background: #334155;">🏋️ 3. Ejercicios y Exámenes</button>
+            </div>
+
+            <!-- Área de control de subida de archivos (Soporta PDF e Imágenes) -->
+            <div style="background: #1e293b; padding: 12px; border-radius: 6px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                <p id="upload-instruction" style="font-size: 0.85rem; color: #94a3b8; margin: 0;">Añade contenido a esta sección para que Claude lo analice:</p>
+                <input type="file" id="media-uploader" accept=".pdf, image/*" style="display: none;">
+                <button class="btn" id="btn-trigger-media" style="background-color: #10b981; padding: 6px 12px; font-size: 0.85rem;" disabled>📂 Adjuntar Archivo/Foto</button>
+            </div>
+
+            <!-- Cuadro de texto único que cambia según la pestaña activa -->
+            <textarea id="edit-content" placeholder="Selecciona una pestaña y añade tus apuntes, resúmenes o pega el texto aquí..." disabled></textarea>
         </main>
+
 
         <aside class="chat-panel">
             <div class="chat-header">🤖 Claude: Tutor de Oposiciones</div>
@@ -83,19 +100,20 @@
     </div>
 
     <script>
-        const datosPorDefecto = {
-            municipio: "alicante", temaSeleccionadoId: null, bloqueSeleccionado: null,
-            general: [{ id: "g1", titulo: "Tema General 1", texto: "Apuntes generales..." }],
-            legislativo: [{ id: "l1", titulo: "Tema Leg. 1: Constitución", texto: "Artículo 1..." }],
+                const datosPorDefecto = {
+            municipio: "alicante", temaSeleccionadoId: null, bloqueSeleccionado: null, pestañaActiva: "temario",
+            general: [{ id: "g1", titulo: "Tema General 1", temario: "Contenido...", resumenes: "Mis esquemas...", ejercicios: "Mis test..." }],
+            legislativo: [{ id: "l1", titulo: "Tema Leg. 1: Constitución", temario: "Artículo 1...", resumenes: "", ejercicios: "" }],
             especifico_alicante: {
-                geografia: [{ id: "alc-g1", titulo: "Geo ALC: Término Municipal", texto: "Límites de Alicante..." }],
-                procedimientos: [{ id: "alc-p1", titulo: "Proc ALC: Licencias", texto: "Normas de Alicante..." }]
+                geografia: [{ id: "alc-g1", titulo: "Geo ALC: Término Municipal", temario: "", resumenes: "", ejercicios: "" }],
+                procedimientos: [{ id: "alc-p1", titulo: "Proc ALC: Licencias", temario: "", resumenes: "", ejercicios: "" }]
             },
             especifico_valencia: {
-                geografia: [{ id: "vlc-g1", titulo: "Geo VLC: Albufera", texto: "Límites de Valencia..." }],
-                procedimientos: [{ id: "vlc-p1", titulo: "Proc VLC: Trámites", texto: "Normas de Valencia..." }]
+                geografia: [{ id: "vlc-g1", titulo: "Geo VLC: Albufera", temario: "", resumenes: "", ejercicios: "" }],
+                procedimientos: [{ id: "vlc-p1", titulo: "Proc VLC: Trámites", temario: "", resumenes: "", ejercicios: "" }]
             }
         };
+
 
         let baseDeDatos = JSON.parse(localStorage.getItem('opo_database')) || datosPorDefecto;
 
@@ -151,6 +169,100 @@
         });
 
         renderizarMenu(); editTitle.disabled = true; editContent.disabled = true;
+                // Función para cambiar entre Temario, Resúmenes y Ejercicios
+        window.cambiarPestaña = function(pestaña) {
+            baseDeDatos.pestañaActiva = pestaña;
+            
+            // Cambiar colores de los botones de pestañas
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.style.background = '#334155');
+            document.getElementById('tab-' + pestaña).style.background = '#6366f1';
+            
+            // Actualizar instrucciones en pantalla
+            const inst = document.getElementById('upload-instruction');
+            if(pestaña === 'temario') inst.innerText = "📖 Subir o editar el Temario Oficial de la oposición:";
+            if(pestaña === 'resumenes') inst.innerText = "📝 Sube tus propios esquemas o resúmenes:";
+            if(pestaña === 'ejercicios') inst.innerText = "🏋️ Sube capturas de test o ejercicios realizados:";
+
+            // Recargar el texto correspondiente al tema y pestaña seleccionada
+            refrescarContenidoPantalla();
+        };
+
+        function refrescarContenidoPantalla() {
+            const id = baseDeDatos.temaSeleccionadoId;
+            const bloque = baseDeDatos.bloqueSeleccionado;
+            const pestaña = baseDeDatos.pestañaActiva;
+            if (!id) return;
+
+            let tema = obtenerTemaActual(id, bloque);
+            if (tema) {
+                // Si la pestaña está vacía en este tema, asegurar que no de error
+                editContent.value = tema[pestaña] || "";
+            }
+        }
+
+        function obtenerTemaActual(id, bloque) {
+            if (bloque === 'general') return baseDeDatos.general.find(t => t.id === id);
+            if (bloque === 'legislativo') return baseDeDatos.legislativo.find(t => t.id === id);
+            const esp = baseDeDatos.municipio === "alicante" ? baseDeDatos.especifico_alicante : baseDeDatos.especifico_valencia;
+            return esp[bloque].find(t => t.id === id);
+        }
+
+        // Modificar la función guardarProgresoActual para que guarde en la pestaña correcta
+        function guardarProgresoActual() {
+            const id = baseDeDatos.temaSeleccionadoId;
+            const bloque = baseDeDatos.bloqueSeleccionado;
+            const pestaña = baseDeDatos.pestañaActiva;
+            if (!id) return;
+
+            let tema = obtenerTemaActual(id, bloque);
+            if (tema) {
+                tema.titulo = editTitle.value;
+                tema[pestaña] = editContent.value;
+                renderizarMenu();
+                sincronizarAlmacenamiento();
+            }
+        }
+
+        // Habilitar botón de archivos al cargar un tema
+        const originalCargarTemaAdvanced = window.cargarTema;
+        window.cargarTema = function(id, bloque) {
+            baseDeDatos.temaSeleccionadoId = id;
+            baseDeDatos.bloqueSeleccionado = bloque;
+            let tema = obtenerTemaActual(id, bloque);
+            if(tema) {
+                editTitle.value = tema.titulo;
+                editTitle.disabled = false;
+                editContent.disabled = false;
+                document.getElementById('btn-trigger-media').disabled = false;
+                refrescarContenidoPantalla();
+            }
+        };
+
+        // Lógica para procesar la subida del archivo (PDF o Imagen)
+        const mediaUploader = document.getElementById('media-uploader');
+        document.getElementById('btn-trigger-media').addEventListener('click', () => mediaUploader.click());
+
+        mediaUploader.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            
+            // SI ES UNA IMAGEN: La convertimos a formato Base64 para que Claude pueda "verla" en el futuro
+            if (file.type.startsWith('image/')) {
+                reader.onload = function(event) {
+                    editContent.value += `\n[IMAGEN_ADJUNTA: ${file.name}]\n${event.target.result}\n`;
+                    guardarProgresoActual();
+                    alert("¡Imagen adjuntada con éxito a esta pestaña!");
+                };
+                reader.readAsDataURL(file);
+            } 
+            // SI ES UN PDF: Avisamos de que guarde el texto del temario
+            else if (file.type === 'application/pdf') {
+                alert("PDF detectado. En la siguiente actualización vincularemos el lector automático de texto directamente a esta pestaña.");
+            }
+        });
+
     </script>
 </body>
 </html>
