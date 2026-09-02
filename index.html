@@ -133,6 +133,52 @@
         </aside>
 
     </div>
+    <!-- Script de Interactividad (JavaScript) -->
+    <script>
+        // 1. Detectar los elementos de la pantalla que queremos cambiar
+        const profileSelector = document.getElementById('profile-selector');
+        const sidebarContainer = document.querySelector('.sidebar');
+
+        // 2. Crear las dos listas de temas según la ciudad
+        const temasAlicante = `
+            <div class="section-title">Bloque Común</div>
+            <div class="topic-item"><span class="status-dot dot-green"></span> Tema 1: Constitución</div>
+            <div class="topic-item"><span class="status-dot dot-yellow"></span> Tema 2: Ley 39/2015</div>
+            
+            <div class="section-title">Bloque Específico Alicante</div>
+            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 1: Organización Ayto. Alicante</div>
+            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 2: Presupuestos de Alicante</div>
+            
+            <div class="section-title">Herramientas</div>
+            <button class="btn-exam">📝 Crear Test de Alicante</button>
+        `;
+
+        const temasValencia = `
+            <div class="section-title">Bloque Común</div>
+            <div class="topic-item"><span class="status-dot dot-green"></span> Tema 1: Constitución</div>
+            <div class="topic-item"><span class="status-dot dot-yellow"></span> Tema 2: Ley 39/2015</div>
+            
+            <div class="section-title">Bloque Específico Valencia</div>
+            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 1: Reglamento Orgánico Valencia</div>
+            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 2: Ordenanzas de Valencia</div>
+            
+            <div class="section-title">Herramientas</div>
+            <button class="btn-exam">📝 Crear Test de Valencia</button>
+        `;
+
+        // 3. Escuchar cuándo el usuario cambia el desplegable
+        profileSelector.addEventListener('change', (event) => {
+            const ciudadSeleccionada = event.target.value;
+
+            if (ciudadSeleccionada === 'valencia') {
+                // Cambiar el menú lateral al de Valencia
+                sidebarContainer.innerHTML = temasValencia;
+            } else {
+                // Volver al menú lateral de Alicante
+                sidebarContainer.innerHTML = temasAlicante;
+            }
+        });
+    </script>
 
 </body>
 </html>
