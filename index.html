@@ -242,13 +242,21 @@
         const mediaUploader = document.getElementById('media-uploader');
         document.getElementById('btn-trigger-media').addEventListener('click', () => mediaUploader.click());
 
+                // Configuración obligatoria del motor de PDF de Mozilla
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cloudflare.com';
+
+        const mediaUploader = document.getElementById('media-uploader');
+        const btnTriggerMedia = document.getElementById('btn-trigger-media');
+
+        document.getElementById('btn-trigger-media').addEventListener('click', () => mediaUploader.click());
+
         mediaUploader.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             
-            // SI ES UNA IMAGEN: La convertimos a formato Base64 para que Claude pueda "verla" en el futuro
+            // 📸 SI ES UNA IMAGEN: Convertir a Base64 para que Claude pueda verla
             if (file.type.startsWith('image/')) {
                 reader.onload = function(event) {
                     editContent.value += `\n[IMAGEN_ADJUNTA: ${file.name}]\n${event.target.result}\n`;
@@ -257,11 +265,42 @@
                 };
                 reader.readAsDataURL(file);
             } 
-            // SI ES UN PDF: Avisamos de que guarde el texto del temario
+            // 📄 SI ES UN PDF: Extraer el texto legal automáticamente
             else if (file.type === 'application/pdf') {
-                alert("PDF detectado. En la siguiente actualización vincularemos el lector automático de texto directamente a esta pestaña.");
+                btnTriggerMedia.innerText = "⌛ Extrayendo texto...";
+                btnTriggerMedia.disabled = true;
+
+                reader.onload = async function() {
+                    try {
+                        const typedarray = new Uint8Array(this.result);
+                        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                        let textoCompleto = "";
+
+                        // Recorrer las páginas y extraer las leyes
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const textContent = await page.getTextContent();
+                            const textoPagina = textContent.items.map(item => item.str).join(" ");
+                            textoCompleto += `[Texto PDF - Página ${i}]\n${textoPagina}\n\n`;
+                        }
+
+                        // Insertar en el cuadro de texto y guardar de forma permanente
+                        editContent.value += textoCompleto;
+                        guardarProgresoActual();
+                        
+                        btnTriggerMedia.innerText = "✅ Adjuntar Archivo/Foto";
+                        btnTriggerMedia.disabled = false;
+                        alert("¡Texto del PDF extraído y guardado con éxito!");
+                    } catch (error) {
+                        alert("Error al procesar el PDF. Asegúrate de que no esté protegido.");
+                        btnTriggerMedia.innerText = "✅ Adjuntar Archivo/Foto";
+                        btnTriggerMedia.disabled = false;
+                    }
+                };
+                reader.readAsArrayBuffer(file);
             }
         });
+
 
     </script>
 </body>
