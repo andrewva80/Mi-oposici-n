@@ -1,0 +1,49 @@
+{
+  "usuario": {
+    "nombre": "Opositor",
+    "perfil_activo": "alicante",
+    "progreso_global_porcentaje": 35
+  },
+  "bloque_comun": [
+    {
+      "id": "comun-tema-1",
+      "titulo": "Tema 1: La Constitución Española de 1978",
+      "estado": "dominado",
+      "color_semaforo": "verde",
+      "ultima_nota_test": 8.5,
+      "toca_repasar": false,
+      "texto_ley": "La Constitución se fundamenta en la indisoluble unidad de la Nación española... El castellano es la lengua española oficial del Estado..."
+    },
+    {
+      "id": "comun-tema-2",
+      "titulo": "Tema 2: El Procedimiento Administrativo Común (Ley 39/2015)",
+      "estado": "en_estudio",
+      "color_semaforo": "amarillo",
+      "ultima_nota_test": 6.0,
+      "toca_repasar": true,
+      "texto_ley": "Son interesados en el procedimiento administrativo quienes lo promuevan como titulares de derechos... Los actos administrativos se presumirán válidos..."
+    }
+  ],
+  "bloque_especifico_alicante": [
+    {
+      "id": "alc-tema-1",
+      "titulo": "Tema 1: Organización del Ayuntamiento de Alicante",
+      "estado": "pendiente",
+      "color_semaforo": "rojo",
+      "ultima_nota_test": null,
+      "toca_repasar": false,
+      "texto_ley": "El Ayuntamiento de Alicante se organiza en concejalías de gobierno... El Pleno Municipal está compuesto por el Alcalde y los Concejales..."
+    }
+  ],
+  "bloque_especifico_valencia": [
+    {
+      "id": "vlc-tema-1",
+      "titulo": "Tema 1: Reglamento Orgánico del Ayuntamiento de Valencia",
+      "estado": "pendiente",
+      "color_semaforo": "rojo",
+      "ultima_nota_test": null,
+      "toca_repasar": false,
+      "texto_ley": "El municipio de Valencia goza de un régimen especial... Las comisiones de pleno se reunirán con carácter ordinario una vez al mes..."
+    }
+  ]
+}
