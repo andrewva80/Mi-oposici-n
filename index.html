@@ -3,182 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma de Oposiciones</title>
+    <title>OpoSystem - Panel de Control</title>
     <style>
-        /* Estilos Base y Modo Oscuro */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #121824;
-            color: #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Barra Superior */
-        header {
-            background-color: #1e293b;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #334155;
-        }
+        body { font-family: -apple-system, sans-serif; background-color: #121824; color: #e2e8f0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        header { background-color: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
         header h1 { font-size: 1.2rem; color: #fff; }
-        select {
-            background-color: #334155;
-            color: #fff;
-            border: 1px solid #475569;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        /* Contenedor de Tres Columnas (Flexbox) */
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        /* Columna 1: Menú Lateral */
-        .sidebar {
-            width: 280px;
-            background-color: #1e293b;
-            border-right: 1px solid #334155;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        .section-title { font-size: 0.8rem; text-transform: uppercase; color: #94a3b8; margin: 15px 0 8px 0; letter-spacing: 0.05em; }
-        .topic-item { display: flex; align-items: center; margin-bottom: 10px; font-size: 0.95rem; cursor: pointer; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 10px; display: inline-block; }
-        .dot-green { background-color: #10b981; }
-        .dot-yellow { background-color: #f59e0b; }
-        .dot-red { background-color: #ef4444; }
-
-        /* Columna 2: Panel de Estudio Central */
-        .content-panel {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-            background-color: #0f172a;
-        }
-        .content-panel h2 { margin-bottom: 15px; color: #fff; }
-        .content-panel p { line-height: 1.6; color: #cbd5e1; margin-bottom: 20px; }
-
-        /* Columna 3: Chat con Claude */
-        .chat-panel {
-            width: 320px;
-            background-color: #1e293b;
-            border-left: 1px solid #334155;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .chat-header { padding: 15px; border-bottom: 1px solid #334155; font-weight: bold; font-size: 0.95rem; color: #fff; }
+        select, input, textarea { background-color: #334155; color: #fff; border: 1px solid #475569; padding: 8px 12px; border-radius: 6px; font-size: 0.9rem; }
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 320px; background-color: #1e293b; border-right: 1px solid #334155; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .section-title { font-size: 0.8rem; text-transform: uppercase; color: #38bdf8; margin-top: 15px; font-weight: bold; letter-spacing: 0.05em; border-bottom: 1px solid #334155; padding-bottom: 3px; }
+        .subsection-title { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; margin-left: 10px; font-style: italic; margin-top: 5px; }
+        .topic-list { display: flex; flex-direction: column; gap: 5px; margin-left: 10px; }
+        .topic-item { display: flex; align-items: center; font-size: 0.9rem; cursor: pointer; padding: 6px; border-radius: 4px; }
+        .topic-item:hover { background-color: #334155; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; background-color: #ef4444; }
+        .add-topic-form { display: flex; flex-direction: column; gap: 8px; background: #0f172a; padding: 12px; border-radius: 6px; margin-top: 15px; }
+        .add-topic-form input, .add-topic-form select { width: 100%; margin-bottom: 4px; }
+        .content-panel { flex: 1; padding: 30px; overflow-y: auto; background-color: #0f172a; display: flex; flex-direction: column; gap: 15px; }
+        .content-panel input { font-size: 1.5rem; font-weight: bold; background: transparent; border: none; border-bottom: 2px solid #334155; padding-bottom: 5px; color: #fff; width: 100%; }
+        .content-panel textarea { flex: 1; resize: none; background-color: #1e293b; padding: 15px; border-radius: 8px; line-height: 1.6; border: 1px solid #334155; color: #e2e8f0; }
+        .chat-panel { width: 320px; background-color: #1e293b; border-left: 1px solid #334155; display: flex; flex-direction: column; overflow: hidden; }
+        .chat-header { padding: 15px; border-bottom: 1px solid #334155; font-weight: bold; color: #fff; }
         .chat-messages { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; }
-        .message { margin-bottom: 12px; padding: 10px; border-radius: 6px; }
-        .message.user { background-color: #334155; align-self: flex-end; }
-        .message.claude { background-color: #1e1b4b; border-left: 3px solid #6366f1; }
-        .chat-input-area { padding: 15px; border-top: 1px solid #334155; display: flex; gap: 8px; }
-        .chat-input-area input { flex: 1; background-color: #0f172a; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 6px; }
-        .btn-exam { background-color: #6366f1; color: #fff; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; }
+        .message.claude { background-color: #1e1b4b; border-left: 3px solid #6366f1; padding: 10px; border-radius: 6px; }
+        .btn { background-color: #6366f1; color: #fff; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background-color: #4f46e5; }
     </style>
 </head>
 <body>
 
-    <!-- Barra Superior -->
     <header>
-        <h1>OrganizaTuEstudio 🎓</h1>
+        <h1>OpoSystem 🎓</h1>
         <select id="profile-selector">
             <option value="alicante">Ayuntamiento de Alicante (Activo)</option>
             <option value="valencia">Ayuntamiento de Valencia</option>
         </select>
     </header>
 
-    <!-- Contenedor Principal de 3 Columnas -->
     <div class="main-container">
-        
-        <!-- Columna 1: Menú Lateral -->
         <nav class="sidebar">
-            <div class="section-title">Bloque Común</div>
-            <div class="topic-item"><span class="status-dot dot-green"></span> Tema 1: Constitución</div>
-            <div class="topic-item"><span class="status-dot dot-yellow"></span> Tema 2: Ley 39/2015</div>
+            <div class="section-title">📚 Temario General</div>
+            <div id="lista-general" class="topic-list"></div>
             
-            <div class="section-title">Bloque Específico</div>
-            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 1: Organización Local</div>
+            <div class="section-title">⚖️ Temario Legislativo</div>
+            <div id="lista-legislativo" class="topic-list"></div>
             
-            <div class="section-title">Herramientas</div>
-            <button class="btn-exam">📝 Crear Test de Examen</button>
+            <div class="section-title">📍 Bloque Específico</div>
+            <div class="subsection-title">🌍 Geografía Local</div>
+            <div id="lista-geografia" class="topic-list"></div>
+            
+            <div class="subsection-title">⚙️ Procedimientos</div>
+            <div id="lista-procedimientos" class="topic-list"></div>
+
+            <div class="add-topic-form">
+                <input type="text" id="new-topic-title" placeholder="Nombre del tema...">
+                <select id="new-topic-block">
+                    <option value="general">Temario General</option>
+                    <option value="legislativo">Temario Legislativo</option>
+                    <option value="geografia">Específico: Geografía</option>
+                    <option value="procedimientos">Específico: Procedimientos</option>
+                </select>
+                <button class="btn" id="btn-add-topic">＋ Añadir al Temario</button>
+            </div>
         </nav>
 
-        <!-- Columna 2: Panel de Apuntes -->
         <main class="content-panel">
-            <h2>Tema 2: El Procedimiento Administrativo Común (Ley 39/2015)</h2>
-            <p><strong>Artículo 4. Concepto de interesado.</strong> Se consideran interesados en el procedimiento administrativo quienes lo promuevan como titulares de derechos o intereses legítimos individuales o colectivos...</p>
-            <p>Los actos administrativos se presumirán válidos y producirán efectos desde la fecha en que se dicten, salvo que en ellos se disponga otra cosa.</p>
+            <input type="text" id="edit-title" value="Selecciona un tema para empezar">
+            <p style="font-size: 0.85rem; color: #94a3b8;">✍️ Edita el título o pega tu contenido. Se guarda automáticamente en tu iPad.</p>
+            <textarea id="edit-content" placeholder="Escribe o pega aquí tus apuntes..."></textarea>
         </main>
 
-        <!-- Columna 3: Chat con Claude -->
         <aside class="chat-panel">
-            <div class="chat-header">🤖 Asistente de Estudio (Claude)</div>
+            <div class="chat-header">🤖 Claude: Tutor de Oposiciones</div>
             <div class="chat-messages">
-                <div class="message claude">¡Hola! Estoy listo para ayudarte con el Tema 2. ¿Tienes dudas sobre los plazos o el concepto de interesado?</div>
-            </div>
-            <div class="chat-input-area">
-                <input type="text" placeholder="Pregúntale a Claude...">
+                <div class="message claude">Selecciona un tema. Analizaré tus textos para generar exámenes según tu municipio.</div>
             </div>
         </aside>
-
     </div>
-    <!-- Script de Interactividad (JavaScript) -->
+
     <script>
-        // 1. Detectar los elementos de la pantalla que queremos cambiar
-        const profileSelector = document.getElementById('profile-selector');
-        const sidebarContainer = document.querySelector('.sidebar');
-
-        // 2. Crear las dos listas de temas según la ciudad
-        const temasAlicante = `
-            <div class="section-title">Bloque Común</div>
-            <div class="topic-item"><span class="status-dot dot-green"></span> Tema 1: Constitución</div>
-            <div class="topic-item"><span class="status-dot dot-yellow"></span> Tema 2: Ley 39/2015</div>
-            
-            <div class="section-title">Bloque Específico Alicante</div>
-            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 1: Organización Ayto. Alicante</div>
-            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 2: Presupuestos de Alicante</div>
-            
-            <div class="section-title">Herramientas</div>
-            <button class="btn-exam">📝 Crear Test de Alicante</button>
-        `;
-
-        const temasValencia = `
-            <div class="section-title">Bloque Común</div>
-            <div class="topic-item"><span class="status-dot dot-green"></span> Tema 1: Constitución</div>
-            <div class="topic-item"><span class="status-dot dot-yellow"></span> Tema 2: Ley 39/2015</div>
-            
-            <div class="section-title">Bloque Específico Valencia</div>
-            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 1: Reglamento Orgánico Valencia</div>
-            <div class="topic-item"><span class="status-dot dot-red"></span> Tema 2: Ordenanzas de Valencia</div>
-            
-            <div class="section-title">Herramientas</div>
-            <button class="btn-exam">📝 Crear Test de Valencia</button>
-        `;
-
-        // 3. Escuchar cuándo el usuario cambia el desplegable
-        profileSelector.addEventListener('change', (event) => {
-            const ciudadSeleccionada = event.target.value;
-
-            if (ciudadSeleccionada === 'valencia') {
-                // Cambiar el menú lateral al de Valencia
-                sidebarContainer.innerHTML = temasValencia;
-            } else {
-                // Volver al menú lateral de Alicante
-                sidebarContainer.innerHTML = temasAlicante;
+        const datosPorDefecto = {
+            municipio: "alicante", temaSeleccionadoId: null, bloqueSeleccionado: null,
+            general: [{ id: "g1", titulo: "Tema General 1", texto: "Apuntes generales..." }],
+            legislativo: [{ id: "l1", titulo: "Tema Leg. 1: Constitución", texto: "Artículo 1..." }],
+            especifico_alicante: {
+                geografia: [{ id: "alc-g1", titulo: "Geo ALC: Término Municipal", texto: "Límites de Alicante..." }],
+                procedimientos: [{ id: "alc-p1", titulo: "Proc ALC: Licencias", texto: "Normas de Alicante..." }]
+            },
+            especifico_valencia: {
+                geografia: [{ id: "vlc-g1", titulo: "Geo VLC: Albufera", texto: "Límites de Valencia..." }],
+                procedimientos: [{ id: "vlc-p1", titulo: "Proc VLC: Trámites", texto: "Normas de Valencia..." }]
             }
-        });
-    </script>
+        };
 
+        let baseDeDatos = JSON.parse(localStorage.getItem('opo_database')) || datosPorDefecto;
+
+        const profileSelector = document.getElementById('profile-selector');
+        const listaGeneral = document.getElementById('lista-general');
+        const listaLegislativo = document.getElementById('lista-legislativo');
+        const listaGeografia = document.getElementById('lista-geografia');
+        const listaProcedimientos = document.getElementById('lista-procedimientos');
+        const editTitle = document.getElementById('edit-title');
+        const editContent = document.getElementById('edit-content');
+        const btnAddTopic = document.getElementById('btn-add-topic');
+        const newTopicTitle = document.getElementById('new-topic-title');
+        const newTopicBlock = document.getElementById('new-topic-block');
+
+        function sincronizarAlmacenamiento() { localStorage.setItem('opo_database', JSON.stringify(baseDeDatos)); }
+
+        function renderizarMenu() {
+            listaGeneral.innerHTML = ""; listaLegislativo.innerHTML = ""; listaGeografia.innerHTML = ""; listaProcedimientos.innerHTML = "";
+            profileSelector.value = baseDeDatos.municipio;
+
+            baseDeDatos.general.forEach(t => { listaGeneral.innerHTML += `<div class="topic-item" onclick="cargarTema('${t.id}', 'general')"><span class="status-dot"></span> ${t.titulo}</div>`; });
+            baseDeDatos.legislativo.forEach(t => { listaLegislativo.innerHTML += `<div class="topic-item" onclick="cargarTema('${t.id}', 'legislativo')"><span class="status-dot"></span> ${t.titulo}</div>`; });
+
+            const esp = baseDeDatos.municipio === "alicante" ? baseDeDatos.especifico_alicante : baseDeDatos.especifico_valencia;
+            esp.geografia.forEach(t => { listaGeografia.innerHTML += `<div class="topic-item" onclick="cargarTema('${t.id}', 'geografia')"><span class="status-dot"></span> ${t.titulo}</div>`; });
+            esp.procedimientos.forEach(t => { listaProcedimientos.innerHTML += `<div class="topic-item" onclick="cargarTema('${t.id}', 'procedimientos')"><span class="status-dot"></span> ${t.titulo}</div>`; });
+        }
+        window.cargarTema = function(id, bloque) {
+            baseDeDatos.temaSeleccionadoId = id; baseDeDatos.bloqueSeleccionado = bloque;
+            let tema = (bloque === 'general') ? baseDeDatos.general.find(t => t.id === id) : (bloque === 'legislativo') ? baseDeDatos.legislativo.find(t => t.id === id) : (baseDeDatos.municipio === "alicante" ? baseDeDatos.especifico_alicante[bloque].find(t => t.id === id) : baseDeDatos.especifico_valencia[bloque].find(t => t.id === id));
+            if (tema) { editTitle.value = tema.titulo; editContent.value = tema.texto; editTitle.disabled = false; editContent.disabled = false; }
+            sincronizarAlmacenamiento();
+        }
+
+        function guardarProgresoActual() {
+            const id = baseDeDatos.temaSeleccionadoId; const bloque = baseDeDatos.bloqueSeleccionado; if (!id) return;
+            let tema = (bloque === 'general') ? baseDeDatos.general.find(t => t.id === id) : (bloque === 'legislativo') ? baseDeDatos.legislativo.find(t => t.id === id) : (baseDeDatos.municipio === "alicante" ? baseDeDatos.especifico_alicante[bloque].find(t => t.id === id) : baseDeDatos.especifico_valencia[bloque].find(t => t.id === id));
+            if (tema) { tema.titulo = editTitle.value; tema.texto = editContent.value; renderizarMenu(); sincronizarAlmacenamiento(); }
+        }
+
+        editTitle.addEventListener('input', guardarProgresoActual);
+        editContent.addEventListener('input', guardarProgresoActual);
+        
+        profileSelector.addEventListener('change', (e) => { baseDeDatos.municipio = e.target.value; editTitle.value = "Selecciona un tema para empezar"; editContent.value = ""; baseDeDatos.temaSeleccionadoId = null; renderizarMenu(); sincronizarAlmacenamiento(); });
+
+        btnAddTopic.addEventListener('click', () => {
+            const titulo = newTopicTitle.value.trim(); if (!titulo) return alert("Escribe el nombre del tema");
+            const nuevoId = "tema-" + Date.now(); const nuevoTema = { id: nuevoId, titulo: titulo, texto: "" }; const bloque = newTopicBlock.value;
+            if (bloque === 'general') baseDeDatos.general.push(nuevoTema);
+            else if (bloque === 'legislativo') baseDeDatos.legislativo.push(nuevoTema);
+            else { const esp = baseDeDatos.municipio === "alicante" ? baseDeDatos.especifico_alicante : baseDeDatos.especifico_valencia; esp[bloque].push(nuevoTema); }
+            newTopicTitle.value = ""; renderizarMenu(); cargarTema(nuevoId, bloque); sincronizarAlmacenamiento();
+        });
+
+        renderizarMenu(); editTitle.disabled = true; editContent.disabled = true;
+    </script>
 </body>
 </html>
